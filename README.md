@@ -1,2 +1,5 @@
 # inventory_laboratorium
-To fulfill Distributed System module.
+
+Proyek ini adalah implementasi sistem manajemen inventaris laboratorium (Spring Boot).
+
+Dibuat untuk memenuhi tugas modul **Distributed System**.
