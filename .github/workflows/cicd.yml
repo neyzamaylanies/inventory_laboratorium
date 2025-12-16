@@ -1,20 +1,18 @@
 # Workflow ini akan berjalan otomatis ketika ada push ke branch main atau pull request.
-# Tujuan: Memastikan kode bersih, teruji, dan menghasilkan file JAR.
-
 name: CI/CD Build & Test (Spring Boot Maven)
 
 on:
   push:
-    branches: [ main ]      # Berjalan ketika ada push ke branch main
+    branches: [ main ]
   pull_request:
-    branches: [ main ]      # Berjalan ketika ada pull request ke main
-  workflow_dispatch:        # Bisa dijalankan manual juga
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
 
   build-and-test:
     name: Build dan Test Aplikasi
-    runs-on: ubuntu-latest  # Menggunakan runner standar GitHub
+    runs-on: ubuntu-latest
 
     steps:
       # Step 1: Checkout kode repository
@@ -25,27 +23,28 @@ jobs:
       - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
-          # Menggunakan versi 25 sesuai konfigurasi pom.xml Anda
-          java-version: '25'                  
-          distribution: 'temurin'             
-          cache: 'maven'                      # Mengaktifkan caching untuk dependensi Maven
+          java-version: '25'
+          distribution: 'temurin'
+          cache: 'maven'
 
-      # Step 3: Build proyek, jalankan Test, dan buat file JAR
+      # 📌 Step 3 BARU: Berikan Izin Eksekusi pada mvnw
+      - name: Set execute permission for mvnw
+        # Perintah ini menambahkan izin eksekusi (+x) pada file mvnw
+        run: chmod +x mvnw
+
+      # Step 4 (Sebelumnya Step 3): Build proyek, jalankan Test, dan buat file JAR
       - name: Build, Test, and Package with Maven
-        # Perintah 'clean install' akan membersihkan, mengompilasi, menjalankan 
-        # InventoryLaboratoriumApplicationTests.java, 
-        # dan menghasilkan JAR.
+        # Sekarang ./mvnw bisa dieksekusi
         run: ./mvnw clean install
 
-      # Step 4: Simpan file JAR sebagai Artifact
-      # File JAR yang dihasilkan (inventory_laboratorium-0.0.1-SNAPSHOT.jar) akan disimpan di sini
+      # Step 5: Simpan file JAR sebagai Artifact
       - name: Upload JAR Artifact
         uses: actions/upload-artifact@v4
         with:
           name: inventory-laboratorium-jar
           path: target/*.jar 
 
-      # Step 5: Notifikasi Status
+      # Step 6: Notifikasi Status
       - name: Notify Build Status
         if: always()
         run: |
