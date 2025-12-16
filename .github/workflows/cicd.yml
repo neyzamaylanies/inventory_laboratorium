@@ -1,0 +1,56 @@
+# Workflow ini akan berjalan otomatis ketika ada push ke branch main atau pull request.
+# Tujuan: Memastikan kode bersih, teruji, dan menghasilkan file JAR.
+
+name: CI/CD Build & Test (Spring Boot Maven)
+
+on:
+  push:
+    branches: [ main ]      # Berjalan ketika ada push ke branch main
+  pull_request:
+    branches: [ main ]      # Berjalan ketika ada pull request ke main
+  workflow_dispatch:        # Bisa dijalankan manual juga
+
+jobs:
+
+  build-and-test:
+    name: Build dan Test Aplikasi
+    runs-on: ubuntu-latest  # Menggunakan runner standar GitHub
+
+    steps:
+      # Step 1: Checkout kode repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Siapkan lingkungan Java (JDK 25)
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          # Menggunakan versi 25 sesuai konfigurasi pom.xml Anda
+          java-version: '25'                  
+          distribution: 'temurin'             
+          cache: 'maven'                      # Mengaktifkan caching untuk dependensi Maven
+
+      # Step 3: Build proyek, jalankan Test, dan buat file JAR
+      - name: Build, Test, and Package with Maven
+        # Perintah 'clean install' akan membersihkan, mengompilasi, menjalankan 
+        # InventoryLaboratoriumApplicationTests.java, 
+        # dan menghasilkan JAR.
+        run: ./mvnw clean install
+
+      # Step 4: Simpan file JAR sebagai Artifact
+      # File JAR yang dihasilkan (inventory_laboratorium-0.0.1-SNAPSHOT.jar) akan disimpan di sini
+      - name: Upload JAR Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: inventory-laboratorium-jar
+          path: target/*.jar 
+
+      # Step 5: Notifikasi Status
+      - name: Notify Build Status
+        if: always()
+        run: |
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "✅ Build dan Test berhasil! JAR sudah di-generate dan disimpan sebagai artifact."
+          else
+            echo "❌ Build atau Test gagal. Cek log error di atas."
+          fi
