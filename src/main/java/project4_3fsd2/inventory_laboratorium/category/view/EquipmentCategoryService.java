@@ -2,6 +2,9 @@ package project4_3fsd2.inventory_laboratorium.category.view;
 
 import project4_3fsd2.inventory_laboratorium.category.model.EquipmentCategory;
 import project4_3fsd2.inventory_laboratorium.category.model.EquipmentCategoryRepository;
+import project4_3fsd2.inventory_laboratorium.DataAlreadyExistsException;
+import project4_3fsd2.inventory_laboratorium.DataNotFoundException;
+import project4_3fsd2.inventory_laboratorium.InvalidDataException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +31,7 @@ public class EquipmentCategoryService {
 
     public EquipmentCategory getById(String id) {
         return repository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
+                .orElseThrow(() -> new DataNotFoundException("Category", id));
     }
 
     public List<EquipmentCategory> searchByName(String keyword) {
@@ -37,19 +40,19 @@ public class EquipmentCategoryService {
 
     public EquipmentCategory save(EquipmentCategory category) {
         if (category.getId() == null || category.getId().isBlank()) {
-            throw new IllegalArgumentException("ID kategori wajib diisi");
+            throw new InvalidDataException("Category", "id", "wajib diisi");
         }
 
         if (repository.existsById(category.getId())) {
-            throw new CategoryAlreadyExistsException(category.getId());
+            throw new DataAlreadyExistsException("Category", category.getId());
         }
 
         if (category.getCategoryName() == null || category.getCategoryName().isBlank()) {
-            throw new IllegalArgumentException("Nama kategori wajib diisi");
+            throw new InvalidDataException("Category", "categoryName", "wajib diisi");
         }
 
         if (repository.existsByCategoryName(category.getCategoryName())) {
-            throw new IllegalArgumentException("Nama kategori '" + category.getCategoryName() + "' sudah ada");
+            throw new InvalidDataException("Category", "categoryName", "'" + category.getCategoryName() + "' sudah digunakan");
         }
 
         return repository.save(category);
@@ -58,20 +61,20 @@ public class EquipmentCategoryService {
     @Transactional
     public List<EquipmentCategory> saveBulk(List<EquipmentCategory> categories) {
         if (categories == null || categories.isEmpty()) {
-            throw new IllegalArgumentException("List kategori tidak boleh kosong");
+            throw new InvalidDataException("Category", "list tidak boleh kosong");
         }
 
         if (categories.size() > 100) {
-            throw new IllegalArgumentException("Maksimal 100 data per bulk insert");
+            throw new InvalidDataException("Category", "maksimal 100 data per bulk insert");
         }
 
         for (EquipmentCategory category : categories) {
             if (category.getId() == null || category.getId().isBlank()) {
-                throw new IllegalArgumentException("ID kategori wajib diisi untuk setiap data");
+                throw new InvalidDataException("Category", "id", "wajib diisi untuk setiap data");
             }
 
             if (repository.existsById(category.getId())) {
-                throw new CategoryAlreadyExistsException(category.getId());
+                throw new DataAlreadyExistsException("Category", category.getId());
             }
         }
 
@@ -89,7 +92,7 @@ public class EquipmentCategoryService {
 
     public void delete(String id) {
         if (!repository.existsById(id)) {
-            throw new CategoryNotFoundException(id);
+            throw new DataNotFoundException("Category", id);
         }
         repository.deleteById(id);
     }
@@ -97,16 +100,16 @@ public class EquipmentCategoryService {
     @Transactional
     public void deleteBulk(List<String> ids) {
         if (ids == null || ids.isEmpty()) {
-            throw new IllegalArgumentException("List ID tidak boleh kosong");
+            throw new InvalidDataException("Category", "list ID tidak boleh kosong");
         }
 
         if (ids.size() > 100) {
-            throw new IllegalArgumentException("Maksimal 100 data per bulk delete");
+            throw new InvalidDataException("Category", "maksimal 100 data per bulk delete");
         }
 
         long existingCount = repository.countByIdIn(ids);
         if (existingCount != ids.size()) {
-            throw new IllegalArgumentException("Sebagian ID tidak ditemukan, operasi dibatalkan");
+            throw new InvalidDataException("Category", "sebagian ID tidak ditemukan, operasi dibatalkan");
         }
 
         repository.deleteAllById(ids);
