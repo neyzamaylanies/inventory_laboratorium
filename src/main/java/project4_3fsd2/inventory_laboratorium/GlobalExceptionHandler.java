@@ -1,10 +1,5 @@
 package project4_3fsd2.inventory_laboratorium;
 
-<<<<<<< HEAD
-public class GlobalExceptionHandler {
-    
-}
-=======
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -126,4 +121,3 @@ public class GlobalExceptionHandler {
         }
     }
 }
->>>>>>> 125c075f8fe5fc2a938addb02193ac5da97ea51f
