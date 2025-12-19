@@ -45,7 +45,7 @@ public class EquipmentConditionLogService {
     }
 
     public List<EquipmentConditionLog> getByConditionAfter(ConditionStatus conditionAfter) {
-        return repository.findByConditionAfter(conditionAfter);
+        return repository.findByCurrentCondition(conditionAfter);
     }
 
     public List<EquipmentConditionLog> getByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
@@ -73,12 +73,12 @@ public class EquipmentConditionLogService {
             throw new InvalidDataException("ConditionLog", "checkedBy", "wajib diisi");
         }
 
-        if (log.getConditionBefore() == null) {
-            throw new InvalidDataException("ConditionLog", "conditionBefore", "wajib diisi");
+        if (log.getPreviousCondition() == null) {
+            throw new InvalidDataException("ConditionLog", "previousCondition", "wajib diisi");
         }
 
-        if (log.getConditionAfter() == null) {
-            throw new InvalidDataException("ConditionLog", "conditionAfter", "wajib diisi");
+        if (log.getCurrentCondition() == null) {
+            throw new InvalidDataException("ConditionLog", "currentCondition", "wajib diisi");
         }
 
         return repository.save(log);
@@ -111,8 +111,8 @@ public class EquipmentConditionLogService {
         EquipmentConditionLog existing = getById(id);
 
         existing.setEquipmentId(updated.getEquipmentId());
-        existing.setConditionBefore(updated.getConditionBefore());
-        existing.setConditionAfter(updated.getConditionAfter());
+        existing.setPreviousCondition(updated.getPreviousCondition());
+        existing.setCurrentCondition(updated.getCurrentCondition());
         existing.setCheckDate(updated.getCheckDate());
         existing.setCheckedBy(updated.getCheckedBy());
         existing.setNote(updated.getNote());
@@ -147,7 +147,7 @@ public class EquipmentConditionLogService {
 
     public List<EquipmentConditionLog> getConditionDegraded() {
         return repository.findAll().stream()
-            .filter(log -> isConditionWorsened(log.getConditionBefore(), log.getConditionAfter()))
+            .filter(log -> isConditionWorsened(log.getPreviousCondition(), log.getCurrentCondition()))
             .toList();
     }
 

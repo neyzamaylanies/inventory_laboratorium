@@ -15,12 +15,12 @@ public class EquipmentConditionLog {
     private String equipmentId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "condition_before", nullable = false)
-    private ConditionStatus conditionBefore;
+    @Column(name = "previous_condition", nullable = false)
+    private ConditionStatus previousCondition;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "condition_after", nullable = false)
-    private ConditionStatus conditionAfter;
+    @Column(name = "current_condition", nullable = false)
+    private ConditionStatus currentCondition;
 
     @Column(name = "check_date", nullable = false)
     private LocalDateTime checkDate;
@@ -45,13 +45,13 @@ public class EquipmentConditionLog {
     protected EquipmentConditionLog() {
     }
 
-    public EquipmentConditionLog(String id, String equipmentId, ConditionStatus conditionBefore, 
-                                 ConditionStatus conditionAfter, LocalDateTime checkDate, 
+    public EquipmentConditionLog(String id, String equipmentId, ConditionStatus previousCondition, 
+                                 ConditionStatus currentCondition, LocalDateTime checkDate, 
                                  String checkedBy, String note) {
         this.id = id;
         this.equipmentId = equipmentId;
-        this.conditionBefore = conditionBefore;
-        this.conditionAfter = conditionAfter;
+        this.previousCondition = previousCondition;
+        this.currentCondition = currentCondition;
         this.checkDate = checkDate;
         this.checkedBy = checkedBy;
         this.note = note;
@@ -82,20 +82,20 @@ public class EquipmentConditionLog {
         this.equipmentId = equipmentId;
     }
 
-    public ConditionStatus getConditionBefore() {
-        return conditionBefore;
+    public ConditionStatus getPreviousCondition() {
+        return previousCondition;
     }
 
-    public void setConditionBefore(ConditionStatus conditionBefore) {
-        this.conditionBefore = conditionBefore;
+    public void setPreviousCondition(ConditionStatus previousCondition) {
+        this.previousCondition = previousCondition;
     }
 
-    public ConditionStatus getConditionAfter() {
-        return conditionAfter;
+    public ConditionStatus getCurrentCondition() {
+        return currentCondition;
     }
 
-    public void setConditionAfter(ConditionStatus conditionAfter) {
-        this.conditionAfter = conditionAfter;
+    public void setCurrentCondition(ConditionStatus currentCondition) {
+        this.currentCondition = currentCondition;
     }
 
     public LocalDateTime getCheckDate() {

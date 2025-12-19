@@ -46,7 +46,7 @@ public class OpenApiConfig {
     public GroupedOpenApi categoryApi() {
         return GroupedOpenApi.builder()
                 .group("Category")
-                .pathsToMatch("/api/category/**")
+                .pathsToMatch("/api/categories/**")
                 .build();
     }
 
@@ -59,7 +59,7 @@ public class OpenApiConfig {
     public GroupedOpenApi equipmentApi() {
         return GroupedOpenApi.builder()
                 .group("Equipment")
-                .pathsToMatch("/api/equipment/**")
+                .pathsToMatch("/api/equipments/**")
                 .build();
     }
 
@@ -72,7 +72,7 @@ public class OpenApiConfig {
     public GroupedOpenApi conditionLogApi() {
         return GroupedOpenApi.builder()
                 .group("Condition Log")
-                .pathsToMatch("/api/condition-log/**")
+                .pathsToMatch("/api/condition-logs/**")
                 .build();
     }
 
@@ -85,7 +85,7 @@ public class OpenApiConfig {
     public GroupedOpenApi transactionApi() {
         return GroupedOpenApi.builder()
                 .group("Transaction")
-                .pathsToMatch("/api/transaction/**")
+                .pathsToMatch("/api/transactions/**")
                 .build();
     }
 
@@ -98,7 +98,7 @@ public class OpenApiConfig {
     public GroupedOpenApi userApi() {
         return GroupedOpenApi.builder()
                 .group("User")
-                .pathsToMatch("/api/user/**")
+                .pathsToMatch("/api/users/**")
                 .build();
     }
 
@@ -111,7 +111,7 @@ public class OpenApiConfig {
     public GroupedOpenApi studentApi() {
         return GroupedOpenApi.builder()
                 .group("Student")
-                .pathsToMatch("/api/student/**")
+                .pathsToMatch("/api/students/**")
                 .build();
     }
 }

@@ -18,13 +18,13 @@ public interface EquipmentConditionLogRepository extends JpaRepository<Equipment
     List<EquipmentConditionLog> findByCheckedBy(String checkedBy);
 
     // Cari log berdasarkan kondisi setelah
-    List<EquipmentConditionLog> findByConditionAfter(ConditionStatus conditionAfter);
+    List<EquipmentConditionLog> findByCurrentCondition(ConditionStatus currentCondition);
 
     // Cari log berdasarkan rentang tanggal
     List<EquipmentConditionLog> findByCheckDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 
     // Cari log yang kondisinya berubah (before != after)
-    List<EquipmentConditionLog> findByConditionBeforeNot(ConditionStatus conditionAfter);
+    List<EquipmentConditionLog> findByPreviousCondition(ConditionStatus previousCondition);
 
     // Hitung log berdasarkan ID list
     long countByIdIn(List<String> ids);
