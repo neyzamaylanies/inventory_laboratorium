@@ -15,11 +15,11 @@ public class EquipmentConditionLog {
     private String equipmentId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "previous_condition", nullable = false)
+    @Column(name = "condition_before", nullable = false)
     private ConditionStatus previousCondition;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "current_condition", nullable = false)
+    @Column(name = "condition_after", nullable = false)
     private ConditionStatus currentCondition;
 
     @Column(name = "check_date", nullable = false)
