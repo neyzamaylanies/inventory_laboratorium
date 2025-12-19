@@ -18,7 +18,7 @@ This project is a **RESTful API**-based laboratory inventory management system b
 ## 🛠️ Tech Stack
 
 * **Java 25** (Oracle JDK).
-* **Spring Boot 4.0.0**.
+* **Spring Boot 4.0.1**.
 * **Spring Data JPA** & **Hibernate 7**.
 * **MySQL Database**.
 * **Springdoc OpenAPI (Swagger)**.
