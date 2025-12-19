@@ -63,6 +63,40 @@ public class InventoryTransactionService {
     }
 
     /**
+     * Get active borrowings (yang belum dikembalikan)
+     */
+    public List<InventoryTransaction> getActiveBorrowings() {
+        return repository.findByTransactionType(InventoryTransaction.TransactionType.OUT).stream()
+            .filter(out -> out.getUsedBy() != null) // Hanya peminjaman mahasiswa
+            .filter(out -> !hasBeenReturned(out))   // Belum dikembalikan
+            .toList();
+    }
+
+    /**
+     * Cek apakah transaksi OUT sudah dikembalikan
+     */
+    private boolean hasBeenReturned(InventoryTransaction outTransaction) {
+        List<InventoryTransaction> returns = repository.findByEquipmentAndType(
+            outTransaction.getEquipmentId(),
+            InventoryTransaction.TransactionType.IN
+        );
+        
+        return returns.stream()
+            .anyMatch(returnTrx -> 
+                returnTrx.getUsedBy() != null &&
+                returnTrx.getUsedBy().equals(outTransaction.getUsedBy()) &&
+                returnTrx.getTransactionDate().isAfter(outTransaction.getTransactionDate())
+            );
+    }
+
+    /**
+     * Get borrowing history per student
+     */
+    public List<InventoryTransaction> getStudentBorrowingHistory(String studentId) {
+        return repository.findByUsedBy(studentId);
+    }
+
+    /**
      * Validasi kondisi equipment sebelum transaksi OUT
      * Exception EquipmentDamageException hanya digunakan di Transaction
      */

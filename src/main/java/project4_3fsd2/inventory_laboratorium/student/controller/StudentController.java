@@ -2,9 +2,11 @@ package project4_3fsd2.inventory_laboratorium.student.controller;
 
 import project4_3fsd2.inventory_laboratorium.student.model.Student;
 import project4_3fsd2.inventory_laboratorium.student.view.StudentService;
+import project4_3fsd2.inventory_laboratorium.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,17 +27,20 @@ public class StudentController {
         summary = "Mengambil daftar semua mahasiswa", 
         description = "Mengambil seluruh data mahasiswa yang tersedia di sistem. Mendukung pagination opsional melalui parameter page dan size."
     )
-    public List<Student> list(
+    public ResponseEntity<ApiResponse<List<Student>>> list(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
         
+        List<Student> students;
         if (page == null && size == null) {
-            return service.getAll();
+            students = service.getAll();
+        } else {
+            int p = (page != null && page >= 0) ? page : 0;
+            int s = (size != null && size > 0) ? size : 10;
+            students = service.getAllWithPagination(p, s);
         }
-
-        int p = (page != null && page >= 0) ? page : 0;
-        int s = (size != null && size > 0) ? size : 10;
-        return service.getAllWithPagination(p, s);
+        
+        return ResponseEntity.ok(ApiResponse.success("Data mahasiswa berhasil diambil", students));
     }
 
     @GetMapping("/{id}")
@@ -43,8 +48,9 @@ public class StudentController {
         summary = "Mengambil detail satu mahasiswa", 
         description = "Mengambil detail satu mahasiswa berdasarkan ID."
     )
-    public Student get(@PathVariable String id) {
-        return service.getById(id);
+    public ResponseEntity<ApiResponse<Student>> get(@PathVariable String id) {
+        Student student = service.getById(id);
+        return ResponseEntity.ok(ApiResponse.success("Data mahasiswa berhasil ditemukan", student));
     }
 
     @GetMapping("/nim/{nim}")
@@ -52,8 +58,9 @@ public class StudentController {
         summary = "Mengambil mahasiswa berdasarkan NIM", 
         description = "Mengambil detail mahasiswa berdasarkan NIM."
     )
-    public Student getByNim(@PathVariable String nim) {
-        return service.getByNim(nim);
+    public ResponseEntity<ApiResponse<Student>> getByNim(@PathVariable String nim) {
+        Student student = service.getByNim(nim);
+        return ResponseEntity.ok(ApiResponse.success("Data mahasiswa berhasil ditemukan", student));
     }
 
     @GetMapping("/search")
@@ -61,8 +68,9 @@ public class StudentController {
         summary = "Mencari mahasiswa berdasarkan nama", 
         description = "Mencari mahasiswa berdasarkan kata kunci pada nama (case insensitive)."
     )
-    public List<Student> search(@RequestParam String q) {
-        return service.searchByName(q);
+    public ResponseEntity<ApiResponse<List<Student>>> search(@RequestParam String q) {
+        List<Student> students = service.searchByName(q);
+        return ResponseEntity.ok(ApiResponse.success("Pencarian berhasil", students));
     }
 
     @GetMapping("/search/program")
@@ -70,28 +78,33 @@ public class StudentController {
         summary = "Mencari mahasiswa berdasarkan program studi", 
         description = "Mencari mahasiswa berdasarkan program studi (case insensitive)."
     )
-    public List<Student> searchByProgram(@RequestParam String program) {
-        return service.searchByStudyProgram(program);
+    public ResponseEntity<ApiResponse<List<Student>>> searchByProgram(@RequestParam String program) {
+        List<Student> students = service.searchByStudyProgram(program);
+        return ResponseEntity.ok(ApiResponse.success("Pencarian berhasil", students));
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     @Operation(
         summary = "Membuat data mahasiswa baru", 
         description = "Membuat satu data mahasiswa baru ke dalam sistem."
     )
-    public Student create(@RequestBody Student student) {
-        return service.save(student);
+    public ResponseEntity<ApiResponse<Student>> create(@RequestBody Student student) {
+        Student created = service.save(student);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.created(created));
     }
 
     @PostMapping("/bulk")
-    @ResponseStatus(HttpStatus.CREATED)
     @Operation(
         summary = "Membuat mahasiswa secara bulk", 
         description = "Membuat banyak data mahasiswa baru dalam satu transaksi (maksimal 100)."
     )
-    public List<Student> createBulk(@RequestBody List<Student> students) {
-        return service.saveBulk(students);
+    public ResponseEntity<ApiResponse<List<Student>>> createBulk(@RequestBody List<Student> students) {
+        List<Student> created = service.saveBulk(students);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Bulk insert berhasil: " + created.size() + " data dibuat", created));
     }
 
     @PutMapping("/{id}")
@@ -99,29 +112,32 @@ public class StudentController {
         summary = "Memperbarui data mahasiswa", 
         description = "Memperbarui data mahasiswa berdasarkan ID."
     )
-    public Student update(
+    public ResponseEntity<ApiResponse<Student>> update(
             @PathVariable String id, 
             @RequestBody Student student) {
-        return service.update(id, student);
+        Student updated = service.update(id, student);
+        return ResponseEntity.ok(ApiResponse.updated(updated));
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(
         summary = "Menghapus mahasiswa", 
         description = "Menghapus satu data mahasiswa berdasarkan ID."
     )
-    public void delete(@PathVariable String id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable String id) {
         service.delete(id);
+        return ResponseEntity.ok(ApiResponse.deleted());
     }
 
     @DeleteMapping("/bulk")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(
         summary = "Menghapus mahasiswa secara bulk", 
         description = "Menghapus banyak data mahasiswa berdasarkan daftar ID (maksimal 100)."
     )
-    public void deleteBulk(@RequestBody List<String> ids) {
+    public ResponseEntity<ApiResponse<Void>> deleteBulk(@RequestBody List<String> ids) {
         service.deleteBulk(ids);
+        return ResponseEntity.ok(
+            ApiResponse.success("Bulk delete berhasil: " + ids.size() + " data dihapus", null)
+        );
     }
 }
