@@ -60,7 +60,7 @@ public class EquipmentCategoryController {
     )
     public ResponseEntity<ApiResponse<List<EquipmentCategory>>> search(@RequestParam String q) {
         List<EquipmentCategory> categories = service.searchByName(q);
-        return ResponseEntity.ok(ApiResponse.success("Pencarian berhasil", categories));
+        return ResponseEntity.ok(ApiResponse.success("Pencarian berhasilc", categories));
     }
 
     @PostMapping

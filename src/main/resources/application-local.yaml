@@ -6,3 +6,13 @@ spring:
 
   jpa:
     open-in-view: false
+    hibernate:
+      ddl-auto: update
+    show-sql: true            # tampilkan query di console (dev only)
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format-sql: true
+
+server:
+  port: 8080
