@@ -27,28 +27,49 @@ public class EquipmentConditionLogController {
 
     @GetMapping
     @Operation(
-        summary = "Mengambil daftar semua log kondisi", 
-        description = "Mengambil seluruh data log kondisi alat yang tersedia di sistem. Mendukung pagination opsional."
+        summary = "Mengambil daftar log kondisi",
+        description = "Mengambil data log kondisi dengan optional filtering (equipmentId, checkedBy, status, startDate, endDate, degraded) dan pagination"
     )
     public ResponseEntity<ApiResponse<List<EquipmentConditionLog>>> list(
+            @RequestParam(required = false) String equipmentId,
+            @RequestParam(required = false) String checkedBy,
+            @RequestParam(required = false) ConditionStatus status,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(required = false) Boolean degraded,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
-        
+
         List<EquipmentConditionLog> logs;
-        if (page == null && size == null) {
-            logs = service.getAll();
-        } else {
+
+        if (equipmentId != null) {
+            logs = service.getByEquipmentId(equipmentId);
+        } else if (checkedBy != null) {
+            logs = service.getByCheckedBy(checkedBy);
+        } else if (status != null) {
+            logs = service.getByConditionAfter(status);
+        } else if (startDate != null && endDate != null) {
+            logs = service.getByDateRange(startDate, endDate);
+        } else if (Boolean.TRUE.equals(degraded)) {
+            logs = service.getConditionDegraded();
+        } else if (page != null || size != null) {
             int p = (page != null && page >= 0) ? page : 0;
             int s = (size != null && size > 0) ? size : 10;
             logs = service.getAllWithPagination(p, s);
+        } else {
+            logs = service.getAll();
         }
-        
-        return ResponseEntity.ok(ApiResponse.success("Data log kondisi berhasil diambil", logs));
+
+        String message = logs.isEmpty()
+                ? "Data log kondisi tidak ditemukan"
+                : "Data log kondisi berhasil diambil";
+
+        return ResponseEntity.ok(ApiResponse.success(message, logs));
     }
 
     @GetMapping("/{id}")
     @Operation(
-        summary = "Mengambil detail satu log kondisi", 
+        summary = "Mengambil detail satu log kondisi",
         description = "Mengambil detail satu log kondisi berdasarkan ID."
     )
     public ResponseEntity<ApiResponse<EquipmentConditionLog>> get(@PathVariable String id) {
@@ -56,61 +77,9 @@ public class EquipmentConditionLogController {
         return ResponseEntity.ok(ApiResponse.success("Data log kondisi berhasil ditemukan", log));
     }
 
-    @GetMapping("/equipment/{equipmentId}")
-    @Operation(
-        summary = "Mengambil history kondisi alat", 
-        description = "Mengambil seluruh riwayat kondisi untuk satu alat tertentu (urut dari terbaru)."
-    )
-    public ResponseEntity<ApiResponse<List<EquipmentConditionLog>>> getByEquipment(@PathVariable String equipmentId) {
-        List<EquipmentConditionLog> logs = service.getByEquipmentId(equipmentId);
-        return ResponseEntity.ok(ApiResponse.success("Riwayat kondisi alat berhasil ditemukan", logs));
-    }
-
-    @GetMapping("/checker/{checkedBy}")
-    @Operation(
-        summary = "Mengambil log berdasarkan petugas", 
-        description = "Mengambil log kondisi yang dicek oleh user tertentu."
-    )
-    public ResponseEntity<ApiResponse<List<EquipmentConditionLog>>> getByChecker(@PathVariable String checkedBy) {
-        List<EquipmentConditionLog> logs = service.getByCheckedBy(checkedBy);
-        return ResponseEntity.ok(ApiResponse.success("Data log berhasil ditemukan", logs));
-    }
-
-    @GetMapping("/condition/{status}")
-    @Operation(
-        summary = "Mengambil log berdasarkan kondisi akhir", 
-        description = "Mengambil log berdasarkan kondisi setelah pengecekan."
-    )
-    public ResponseEntity<ApiResponse<List<EquipmentConditionLog>>> getByCondition(@PathVariable ConditionStatus status) {
-        List<EquipmentConditionLog> logs = service.getByConditionAfter(status);
-        return ResponseEntity.ok(ApiResponse.success("Data log berhasil ditemukan", logs));
-    }
-
-    @GetMapping("/date-range")
-    @Operation(
-        summary = "Mengambil log berdasarkan rentang tanggal", 
-        description = "Mengambil log dalam rentang tanggal tertentu."
-    )
-    public ResponseEntity<ApiResponse<List<EquipmentConditionLog>>> getByDateRange(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
-        List<EquipmentConditionLog> logs = service.getByDateRange(startDate, endDate);
-        return ResponseEntity.ok(ApiResponse.success("Data log berhasil ditemukan", logs));
-    }
-
-    @GetMapping("/degraded")
-    @Operation(
-        summary = "Mengambil log kondisi yang memburuk", 
-        description = "Mengambil log dimana kondisi alat memburuk (BAIK → RUSAK, dll)."
-    )
-    public ResponseEntity<ApiResponse<List<EquipmentConditionLog>>> getConditionDegraded() {
-        List<EquipmentConditionLog> logs = service.getConditionDegraded();
-        return ResponseEntity.ok(ApiResponse.success("Data kondisi yang memburuk berhasil ditemukan", logs));
-    }
-
     @PostMapping
     @Operation(
-        summary = "Membuat log kondisi baru", 
+        summary = "Membuat log kondisi baru",
         description = "Membuat satu data log kondisi baru ke dalam sistem."
     )
     public ResponseEntity<ApiResponse<EquipmentConditionLog>> create(@RequestBody EquipmentConditionLog log) {
@@ -122,7 +91,7 @@ public class EquipmentConditionLogController {
 
     @PostMapping("/bulk")
     @Operation(
-        summary = "Membuat log kondisi secara bulk", 
+        summary = "Membuat log kondisi secara bulk",
         description = "Membuat banyak log kondisi baru dalam satu transaksi (maksimal 100)."
     )
     public ResponseEntity<ApiResponse<List<EquipmentConditionLog>>> createBulk(@RequestBody List<EquipmentConditionLog> logs) {
@@ -134,11 +103,11 @@ public class EquipmentConditionLogController {
 
     @PutMapping("/{id}")
     @Operation(
-        summary = "Memperbarui data log kondisi", 
+        summary = "Memperbarui data log kondisi",
         description = "Memperbarui data log kondisi berdasarkan ID."
     )
     public ResponseEntity<ApiResponse<EquipmentConditionLog>> update(
-            @PathVariable String id, 
+            @PathVariable String id,
             @RequestBody EquipmentConditionLog log) {
         EquipmentConditionLog updated = service.update(id, log);
         return ResponseEntity.ok(ApiResponse.updated(updated));
@@ -146,7 +115,7 @@ public class EquipmentConditionLogController {
 
     @DeleteMapping("/{id}")
     @Operation(
-        summary = "Menghapus log kondisi", 
+        summary = "Menghapus log kondisi",
         description = "Menghapus satu log kondisi berdasarkan ID."
     )
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable String id) {
@@ -156,7 +125,7 @@ public class EquipmentConditionLogController {
 
     @DeleteMapping("/bulk")
     @Operation(
-        summary = "Menghapus log kondisi secara bulk", 
+        summary = "Menghapus log kondisi secara bulk",
         description = "Menghapus banyak log kondisi berdasarkan daftar ID (maksimal 100)."
     )
     public ResponseEntity<ApiResponse<Void>> deleteBulk(@RequestBody List<String> ids) {

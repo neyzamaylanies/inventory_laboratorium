@@ -53,8 +53,12 @@ public class StudentController {
             students = service.getAll();
         }
 
+        String message = students.isEmpty()
+        ? "Data mahasiswa tidak ditemukan" 
+        : "Data mahasiswa berhasil diambil";
+
         return ResponseEntity.ok(
-            ApiResponse.success("Data mahasiswa berhasil diambil", students)
+            ApiResponse.success(message, students)
         );
     }
 

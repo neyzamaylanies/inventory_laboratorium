@@ -25,28 +25,43 @@ public class UserController {
 
     @GetMapping
     @Operation(
-        summary = "Mengambil daftar semua user", 
-        description = "Mengambil seluruh data user yang tersedia di sistem. Mendukung pagination opsional melalui parameter page dan size."
+        summary = "Mengambil daftar user",
+        description = "Mengambil data user dengan optional filtering (name, role, email) dan pagination"
     )
     public ResponseEntity<ApiResponse<List<User>>> list(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) UserRole role,
+            @RequestParam(required = false) String email,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
-        
+
         List<User> users;
-        if (page == null && size == null) {
-            users = service.getAll();
-        } else {
+
+        if (name != null) {
+            users = service.searchByName(name);
+        } else if (role != null) {
+            users = service.getByRole(role);
+        } else if (email != null) {
+            User user = service.getByEmail(email);
+            users = user != null ? List.of(user) : List.of();
+        } else if (page != null || size != null) {
             int p = (page != null && page >= 0) ? page : 0;
             int s = (size != null && size > 0) ? size : 10;
             users = service.getAllWithPagination(p, s);
+        } else {
+            users = service.getAll();
         }
-        
-        return ResponseEntity.ok(ApiResponse.success("Data user berhasil diambil", users));
+
+        String message = users.isEmpty()
+                ? "Data user tidak ditemukan"
+                : "Data user berhasil diambil";
+
+        return ResponseEntity.ok(ApiResponse.success(message, users));
     }
 
     @GetMapping("/{id}")
     @Operation(
-        summary = "Mengambil detail satu user", 
+        summary = "Mengambil detail satu user",
         description = "Mengambil detail satu user berdasarkan ID."
     )
     public ResponseEntity<ApiResponse<User>> get(@PathVariable String id) {
@@ -54,39 +69,9 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success("Data user berhasil ditemukan", user));
     }
 
-    @GetMapping("/email/{email}")
-    @Operation(
-        summary = "Mencari user berdasarkan email", 
-        description = "Mencari user berdasarkan alamat email."
-    )
-    public ResponseEntity<ApiResponse<User>> getByEmail(@PathVariable String email) {
-        User user = service.getByEmail(email);
-        return ResponseEntity.ok(ApiResponse.success("Data user berhasil ditemukan", user));
-    }
-
-    @GetMapping("/role/{role}")
-    @Operation(
-        summary = "Mencari user berdasarkan role", 
-        description = "Mencari user berdasarkan role (ADMIN atau PETUGAS)."
-    )
-    public ResponseEntity<ApiResponse<List<User>>> getByRole(@PathVariable UserRole role) {
-        List<User> users = service.getByRole(role);
-        return ResponseEntity.ok(ApiResponse.success("Data user berhasil ditemukan", users));
-    }
-
-    @GetMapping("/search")
-    @Operation(
-        summary = "Mencari user berdasarkan nama", 
-        description = "Mencari user berdasarkan kata kunci pada nama (case insensitive)."
-    )
-    public ResponseEntity<ApiResponse<List<User>>> search(@RequestParam String q) {
-        List<User> users = service.searchByName(q);
-        return ResponseEntity.ok(ApiResponse.success("Pencarian berhasil", users));
-    }
-
     @PostMapping
     @Operation(
-        summary = "Membuat user baru", 
+        summary = "Membuat user baru",
         description = "Membuat satu data user baru ke dalam sistem."
     )
     public ResponseEntity<ApiResponse<User>> create(@RequestBody User user) {
@@ -98,7 +83,7 @@ public class UserController {
 
     @PostMapping("/bulk")
     @Operation(
-        summary = "Membuat user secara bulk", 
+        summary = "Membuat user secara bulk",
         description = "Membuat banyak user baru dalam satu transaksi (maksimal 100)."
     )
     public ResponseEntity<ApiResponse<List<User>>> createBulk(@RequestBody List<User> users) {
@@ -110,11 +95,11 @@ public class UserController {
 
     @PutMapping("/{id}")
     @Operation(
-        summary = "Memperbarui data user", 
+        summary = "Memperbarui data user",
         description = "Memperbarui data user berdasarkan ID."
     )
     public ResponseEntity<ApiResponse<User>> update(
-            @PathVariable String id, 
+            @PathVariable String id,
             @RequestBody User user) {
         User updated = service.update(id, user);
         return ResponseEntity.ok(ApiResponse.updated(updated));
@@ -122,7 +107,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @Operation(
-        summary = "Menghapus user", 
+        summary = "Menghapus user",
         description = "Menghapus satu user berdasarkan ID."
     )
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable String id) {
@@ -132,7 +117,7 @@ public class UserController {
 
     @DeleteMapping("/bulk")
     @Operation(
-        summary = "Menghapus user secara bulk", 
+        summary = "Menghapus user secara bulk",
         description = "Menghapus banyak user berdasarkan daftar ID (maksimal 100)."
     )
     public ResponseEntity<ApiResponse<Void>> deleteBulk(@RequestBody List<String> ids) {
