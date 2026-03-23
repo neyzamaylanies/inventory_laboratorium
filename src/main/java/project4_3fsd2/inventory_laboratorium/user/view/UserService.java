@@ -19,7 +19,7 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository repository;
-    private final PasswordEncoder passwordEncoder; // 🔥 tambah ini
+    private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
@@ -52,7 +52,6 @@ public class UserService {
         return repository.findByNameContainingIgnoreCase(keyword);
     }
 
-    // ✅ CREATE USER (SUDAH HASH)
     public User save(User user) {
         if (user.getId() == null || user.getId().isBlank()) {
             throw new InvalidDataException("User", "id", "wajib diisi");
@@ -80,13 +79,11 @@ public class UserService {
             throw new InvalidDataException("User", "name", "wajib diisi");
         }
 
-        // 🔥 HASH PASSWORD
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return repository.save(user);
     }
 
-    // ✅ BULK CREATE (SUDAH HASH)
     @Transactional
     public List<User> saveBulk(List<User> users) {
         if (users == null || users.isEmpty()) {
@@ -121,22 +118,26 @@ public class UserService {
         return repository.saveAll(users);
     }
 
-    // ✅ UPDATE USER (SUDAH HASH + ANTI DOUBLE HASH)
     public User update(String id, User updated) {
-        User existing = getById(id);
+    User existing = getById(id);
 
-        existing.setName(updated.getName());
-        existing.setEmail(updated.getEmail());
+    existing.setName(updated.getName());
 
-        if (updated.getPassword() != null && !updated.getPassword().isBlank()) {
-
-            // 🔥 ANTI DOUBLE HASH
-            if (!updated.getPassword().startsWith("$2")) {
-                existing.setPassword(passwordEncoder.encode(updated.getPassword()));
-            }
+    if (updated.getEmail() != null && !updated.getEmail().equals(existing.getEmail())) {
+        if (repository.existsByEmail(updated.getEmail())) {
+            throw new InvalidDataException("User", "email",
+                "'" + updated.getEmail() + "' sudah digunakan");
         }
+        existing.setEmail(updated.getEmail());
+    }
 
-        if (updated.getRole() != null) {
+    if (updated.getPassword() != null && !updated.getPassword().isBlank()) {
+        if (!updated.getPassword().startsWith("$2")) {
+            existing.setPassword(passwordEncoder.encode(updated.getPassword()));
+        }
+    }
+
+    if (updated.getRole() != null) {
         existing.setRole(updated.getRole());
     }
 
