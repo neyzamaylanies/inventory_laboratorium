@@ -15,7 +15,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         
         // Allow credentials
-        config.setAllowCredentials(true);
+        config.setAllowCredentials(false);
         
         // Allow frontend origins
         config.addAllowedOrigin("http://localhost");
@@ -23,7 +23,7 @@ public class CorsConfig {
         config.addAllowedOrigin("http://localhost:8080");
         config.addAllowedOrigin("http://localhost:5000");
         config.addAllowedOrigin("http://localhost:5500");
-        config.addAllowedOriginPattern("http://localhost:*"); // semua port Flutter web
+        config.addAllowedOriginPattern("*"); // semua port Flutter web
         config.addAllowedOrigin("http://127.0.0.1");
         config.addAllowedOriginPattern("http://127.0.0.1:*");
         
@@ -32,7 +32,8 @@ public class CorsConfig {
         
         // Allow all HTTP methods (GET, POST, PUT, DELETE, etc)
         config.addAllowedMethod("*");
-        
+        config.addExposedHeader("Authorization");
+
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
