@@ -6,9 +6,11 @@ import project4_3fsd2.inventory_laboratorium.user.model.UserRepository;
 import project4_3fsd2.inventory_laboratorium.DataAlreadyExistsException;
 import project4_3fsd2.inventory_laboratorium.DataNotFoundException;
 import project4_3fsd2.inventory_laboratorium.InvalidDataException;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
@@ -17,9 +19,11 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder; // 🔥 tambah ini
 
-    public UserService(UserRepository repository) {
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<User> getAll() {
@@ -48,6 +52,7 @@ public class UserService {
         return repository.findByNameContainingIgnoreCase(keyword);
     }
 
+    // ✅ CREATE USER (SUDAH HASH)
     public User save(User user) {
         if (user.getId() == null || user.getId().isBlank()) {
             throw new InvalidDataException("User", "id", "wajib diisi");
@@ -75,9 +80,13 @@ public class UserService {
             throw new InvalidDataException("User", "name", "wajib diisi");
         }
 
+        // 🔥 HASH PASSWORD
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         return repository.save(user);
     }
 
+    // ✅ BULK CREATE (SUDAH HASH)
     @Transactional
     public List<User> saveBulk(List<User> users) {
         if (users == null || users.isEmpty()) {
@@ -102,22 +111,34 @@ public class UserService {
             if (repository.existsByEmail(user.getEmail())) {
                 throw new InvalidDataException("User", "email", "'" + user.getEmail() + "' sudah digunakan");
             }
+
+            // 🔥 HASH PASSWORD
+            if (user.getPassword() != null && !user.getPassword().isBlank()) {
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
+            }
         }
 
         return repository.saveAll(users);
     }
 
+    // ✅ UPDATE USER (SUDAH HASH + ANTI DOUBLE HASH)
     public User update(String id, User updated) {
         User existing = getById(id);
 
         existing.setName(updated.getName());
         existing.setEmail(updated.getEmail());
-        
+
         if (updated.getPassword() != null && !updated.getPassword().isBlank()) {
-            existing.setPassword(updated.getPassword());
+
+            // 🔥 ANTI DOUBLE HASH
+            if (!updated.getPassword().startsWith("$2")) {
+                existing.setPassword(passwordEncoder.encode(updated.getPassword()));
+            }
         }
-        
+
+        if (updated.getRole() != null) {
         existing.setRole(updated.getRole());
+    }
 
         return repository.save(existing);
     }
@@ -149,10 +170,10 @@ public class UserService {
 
     private void validateIdFormat(String id, UserRole role) {
         if (role == UserRole.ADMIN && !id.startsWith("ADM")) {
-            throw new InvalidDataException("User", "id", "Admin harus dimulai dengan 'ADM' (contoh: ADM001)");
+            throw new InvalidDataException("User", "id", "Admin harus dimulai dengan 'ADM'");
         }
         if (role == UserRole.PETUGAS && !id.startsWith("EMP")) {
-            throw new InvalidDataException("User", "id", "Petugas harus dimulai dengan 'EMP' (contoh: EMP001)");
+            throw new InvalidDataException("User", "id", "Petugas harus dimulai dengan 'EMP'");
         }
     }
 }
