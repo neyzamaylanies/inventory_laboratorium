@@ -24,28 +24,45 @@ public class LaboratoryEquipmentController {
 
     @GetMapping
     @Operation(
-        summary = "Mengambil daftar semua alat laboratorium", 
-        description = "Mengambil seluruh data alat laboratorium yang tersedia di sistem. Mendukung pagination opsional melalui parameter page dan size."
+        summary = "Mengambil daftar alat laboratorium",
+        description = "Mengambil data alat dengan optional filtering (name, categoryId, condition, location) dan pagination"
     )
     public ResponseEntity<ApiResponse<List<LaboratoryEquipment>>> list(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String categoryId,
+            @RequestParam(required = false) LaboratoryEquipment.ConditionStatus condition,
+            @RequestParam(required = false) String location,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
-        
+
         List<LaboratoryEquipment> equipments;
-        if (page == null && size == null) {
-            equipments = service.getAll();
-        } else {
+
+        if (name != null) {
+            equipments = service.searchByName(name);
+        } else if (categoryId != null) {
+            equipments = service.searchByCategory(categoryId);
+        } else if (condition != null) {
+            equipments = service.searchByCondition(condition);
+        } else if (location != null) {
+            equipments = service.searchByLocation(location);
+        } else if (page != null || size != null) {
             int p = (page != null && page >= 0) ? page : 0;
             int s = (size != null && size > 0) ? size : 10;
             equipments = service.getAllWithPagination(p, s);
+        } else {
+            equipments = service.getAll();
         }
-        
-        return ResponseEntity.ok(ApiResponse.success("Data alat laboratorium berhasil diambil", equipments));
+
+        String message = equipments.isEmpty()
+                ? "Data alat laboratorium tidak ditemukan"
+                : "Data alat laboratorium berhasil diambil";
+
+        return ResponseEntity.ok(ApiResponse.success(message, equipments));
     }
 
     @GetMapping("/{id}")
     @Operation(
-        summary = "Mengambil detail satu alat", 
+        summary = "Mengambil detail satu alat",
         description = "Mengambil detail satu alat laboratorium berdasarkan ID."
     )
     public ResponseEntity<ApiResponse<LaboratoryEquipment>> get(@PathVariable String id) {
@@ -53,49 +70,9 @@ public class LaboratoryEquipmentController {
         return ResponseEntity.ok(ApiResponse.success("Data alat berhasil ditemukan", equipment));
     }
 
-    @GetMapping("/search")
-    @Operation(
-        summary = "Mencari alat berdasarkan nama", 
-        description = "Mencari alat berdasarkan kata kunci pada nama alat (case insensitive)."
-    )
-    public ResponseEntity<ApiResponse<List<LaboratoryEquipment>>> search(@RequestParam String q) {
-        List<LaboratoryEquipment> equipments = service.searchByName(q);
-        return ResponseEntity.ok(ApiResponse.success("Pencarian berhasil", equipments));
-    }
-
-    @GetMapping("/category/{categoryId}")
-    @Operation(
-        summary = "Mencari alat berdasarkan kategori", 
-        description = "Mengambil semua alat yang termasuk dalam kategori tertentu."
-    )
-    public ResponseEntity<ApiResponse<List<LaboratoryEquipment>>> searchByCategory(@PathVariable String categoryId) {
-        List<LaboratoryEquipment> equipments = service.searchByCategory(categoryId);
-        return ResponseEntity.ok(ApiResponse.success("Data alat berhasil ditemukan", equipments));
-    }
-
-    @GetMapping("/condition/{status}")
-    @Operation(
-        summary = "Mencari alat berdasarkan kondisi", 
-        description = "Mengambil semua alat dengan status kondisi tertentu (BAIK, RUSAK_RINGAN, RUSAK_BERAT, DALAM_PERBAIKAN)."
-    )
-    public ResponseEntity<ApiResponse<List<LaboratoryEquipment>>> searchByCondition(@PathVariable LaboratoryEquipment.ConditionStatus status) {
-        List<LaboratoryEquipment> equipments = service.searchByCondition(status);
-        return ResponseEntity.ok(ApiResponse.success("Data alat berhasil ditemukan", equipments));
-    }
-
-    @GetMapping("/location")
-    @Operation(
-        summary = "Mencari alat berdasarkan lokasi", 
-        description = "Mencari alat berdasarkan lokasi penyimpanan (case insensitive)."
-    )
-    public ResponseEntity<ApiResponse<List<LaboratoryEquipment>>> searchByLocation(@RequestParam String location) {
-        List<LaboratoryEquipment> equipments = service.searchByLocation(location);
-        return ResponseEntity.ok(ApiResponse.success("Pencarian berhasil", equipments));
-    }
-
     @PostMapping
     @Operation(
-        summary = "Membuat data alat baru", 
+        summary = "Membuat data alat baru",
         description = "Membuat satu data alat laboratorium baru ke dalam sistem."
     )
     public ResponseEntity<ApiResponse<LaboratoryEquipment>> create(@RequestBody LaboratoryEquipment equipment) {
@@ -107,7 +84,7 @@ public class LaboratoryEquipmentController {
 
     @PostMapping("/bulk")
     @Operation(
-        summary = "Membuat alat secara bulk", 
+        summary = "Membuat alat secara bulk",
         description = "Membuat banyak data alat baru dalam satu transaksi (maksimal 100)."
     )
     public ResponseEntity<ApiResponse<List<LaboratoryEquipment>>> createBulk(@RequestBody List<LaboratoryEquipment> equipments) {
@@ -119,11 +96,11 @@ public class LaboratoryEquipmentController {
 
     @PutMapping("/{id}")
     @Operation(
-        summary = "Memperbarui data alat", 
+        summary = "Memperbarui data alat",
         description = "Memperbarui data alat laboratorium berdasarkan ID."
     )
     public ResponseEntity<ApiResponse<LaboratoryEquipment>> update(
-            @PathVariable String id, 
+            @PathVariable String id,
             @RequestBody LaboratoryEquipment equipment) {
         LaboratoryEquipment updated = service.update(id, equipment);
         return ResponseEntity.ok(ApiResponse.updated(updated));
@@ -131,7 +108,7 @@ public class LaboratoryEquipmentController {
 
     @DeleteMapping("/{id}")
     @Operation(
-        summary = "Menghapus alat", 
+        summary = "Menghapus alat",
         description = "Menghapus satu data alat laboratorium berdasarkan ID."
     )
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable String id) {
@@ -141,7 +118,7 @@ public class LaboratoryEquipmentController {
 
     @DeleteMapping("/bulk")
     @Operation(
-        summary = "Menghapus alat secara bulk", 
+        summary = "Menghapus alat secara bulk",
         description = "Menghapus banyak data alat berdasarkan daftar ID (maksimal 100)."
     )
     public ResponseEntity<ApiResponse<Void>> deleteBulk(@RequestBody List<String> ids) {

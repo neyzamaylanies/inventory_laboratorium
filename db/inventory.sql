@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 11 Mar 2026 pada 09.46
--- Versi server: 10.4.32-MariaDB
--- Versi PHP: 8.2.12
+-- Generation Time: Mar 23, 2026 at 07:44 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,8 +24,8 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Stand-in struktur untuk tampilan `active_borrowings`
--- (Lihat di bawah untuk tampilan aktual)
+-- Stand-in structure for view `active_borrowings`
+-- (See below for the actual view)
 --
 CREATE TABLE `active_borrowings` (
 `transaction_id` varchar(15)
@@ -43,7 +43,7 @@ CREATE TABLE `active_borrowings` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `equipment_category`
+-- Table structure for table `equipment_category`
 --
 
 CREATE TABLE `equipment_category` (
@@ -55,7 +55,7 @@ CREATE TABLE `equipment_category` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `equipment_category`
+-- Dumping data for table `equipment_category`
 --
 
 INSERT INTO `equipment_category` (`id`, `category_name`, `description`, `created_at`, `updated_at`) VALUES
@@ -68,7 +68,7 @@ INSERT INTO `equipment_category` (`id`, `category_name`, `description`, `created
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `equipment_condition_log`
+-- Table structure for table `equipment_condition_log`
 --
 
 CREATE TABLE `equipment_condition_log` (
@@ -83,7 +83,7 @@ CREATE TABLE `equipment_condition_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `equipment_condition_log`
+-- Dumping data for table `equipment_condition_log`
 --
 
 INSERT INTO `equipment_condition_log` (`id`, `equipment_id`, `condition_before`, `condition_after`, `check_date`, `checked_by`, `note`, `created_at`) VALUES
@@ -103,8 +103,8 @@ INSERT INTO `equipment_condition_log` (`id`, `equipment_id`, `condition_before`,
 -- --------------------------------------------------------
 
 --
--- Stand-in struktur untuk tampilan `equipment_stock_realtime`
--- (Lihat di bawah untuk tampilan aktual)
+-- Stand-in structure for view `equipment_stock_realtime`
+-- (See below for the actual view)
 --
 CREATE TABLE `equipment_stock_realtime` (
 `id` varchar(10)
@@ -120,7 +120,7 @@ CREATE TABLE `equipment_stock_realtime` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `inventory_transaction`
+-- Table structure for table `inventory_transaction`
 --
 
 CREATE TABLE `inventory_transaction` (
@@ -136,7 +136,7 @@ CREATE TABLE `inventory_transaction` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `inventory_transaction`
+-- Dumping data for table `inventory_transaction`
 --
 
 INSERT INTO `inventory_transaction` (`id`, `equipment_id`, `transaction_type`, `quantity`, `transaction_date`, `note`, `handled_by`, `used_by`, `created_at`) VALUES
@@ -156,7 +156,7 @@ INSERT INTO `inventory_transaction` (`id`, `equipment_id`, `transaction_type`, `
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `laboratory_equipment`
+-- Table structure for table `laboratory_equipment`
 --
 
 CREATE TABLE `laboratory_equipment` (
@@ -174,7 +174,7 @@ CREATE TABLE `laboratory_equipment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `laboratory_equipment`
+-- Dumping data for table `laboratory_equipment`
 --
 
 INSERT INTO `laboratory_equipment` (`id`, `equipment_name`, `category_id`, `total_quantity`, `available_quantity`, `condition_status`, `location`, `purchase_date`, `purchase_price`, `created_at`, `updated_at`) VALUES
@@ -184,12 +184,12 @@ INSERT INTO `laboratory_equipment` (`id`, `equipment_name`, `category_id`, `tota
 ('EQP004', 'Pipet Volumetrik 25ml', 'CAT002', 30, 28, 'BAIK', 'Lab Kimia Lt.1', '2023-04-05', 85000.00, '2025-12-16 07:25:27', '2025-12-16 07:25:27'),
 ('EQP005', 'pH Meter Digital', 'CAT001', 8, 7, 'BAIK', 'Lab Kimia Lt.1', NULL, NULL, '2025-12-16 07:25:27', '2025-12-20 16:20:16'),
 ('EQP006', 'Spectrophotometers (UV-Vis, XRF, NIR),', 'CAT004', 34, 34, 'BAIK', 'Lab Teknik Lt. 5', NULL, NULL, '2025-12-20 13:25:20', '2025-12-20 13:25:20'),
-('EQP007', 'Neraca Analitik', 'CAT001', 15, 15, 'RUSAK_BERAT', 'Lab Teknik Lt. 5', NULL, NULL, '2025-12-20 17:27:36', '2025-12-20 17:27:50');
+('EQP007', 'Neraca Analitik', 'CAT001', 15, 15, 'BAIK', 'Lab Teknik Lt. 5', NULL, NULL, '2025-12-20 17:27:36', '2026-03-19 18:34:46');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `student`
+-- Table structure for table `student`
 --
 
 CREATE TABLE `student` (
@@ -203,7 +203,7 @@ CREATE TABLE `student` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `student`
+-- Dumping data for table `student`
 --
 
 INSERT INTO `student` (`id`, `nim`, `name`, `study_program`, `phone`, `created_at`, `updated_at`) VALUES
@@ -217,8 +217,8 @@ INSERT INTO `student` (`id`, `nim`, `name`, `study_program`, `phone`, `created_a
 -- --------------------------------------------------------
 
 --
--- Stand-in struktur untuk tampilan `transaction_history`
--- (Lihat di bawah untuk tampilan aktual)
+-- Stand-in structure for view `transaction_history`
+-- (See below for the actual view)
 --
 CREATE TABLE `transaction_history` (
 `id` varchar(15)
@@ -237,7 +237,7 @@ CREATE TABLE `transaction_history` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -251,23 +251,23 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `created_at`, `updated_at`) VALUES
-('ADM001', 'Dr. Budi Santoso', 'budi.santoso@lab.ac.id', '$2y$10$bs/bKN7p1AgjjPzEjI5TPOfeFGpj4W2oN.3k9cA2K4E9wMFU4Bll2', 'ADMIN', '2025-12-16 07:25:27', '2026-03-11 07:01:33'),
-('ADM002', 'Prof. Sinta Dewi', 'sinta.dewi@lab.ac.id', '$2y$10$Da2G1g9ONPyQbt8z0EDWj.kWNVq5aF3xjCT/gNySJVqiRnIhJ2qOi', 'ADMIN', '2025-12-16 07:25:27', '2026-03-11 07:03:43'),
-('ADM003', 'Dr. Aston', 'aston_lv@lab.ac.id', '$2y$10$9UapgDcayIcQDQl1xMHdCeFhQf/Siuq5TQkl4zgs3qxDe5EB3B7km', 'ADMIN', '2025-12-19 02:33:56', '2026-03-11 07:04:05'),
-('ADM004', 'Prof. Chokun', 'chokun@lab.ac.id', '$2y$10$Rs.ywO2ZP57i1RRP95iH6Or5IzYz4SeiOZsMDmrHRA1AW4ymSQDhm', 'ADMIN', '2025-12-20 17:49:20', '2026-03-11 07:04:31'),
-('EMP001', 'Siti Nurhaliza', 'siti.nurhaliza@lab.ac.id', '$2y$10$Tmim9rQzIMss0ni4ekG40.yJe05Ioei3nYWbqH437UlnCjS9MPhPa', 'PETUGAS', '2025-12-16 07:25:27', '2026-03-11 07:05:30'),
-('EMP002', 'Ahmad Rifai', 'ahmad.rifai@lab.ac.id', '$2y$10$cUh9S.bd83MTOPqsBZwuauc1vVFj/FBcAAMBkOHYlEFYjD27kgm0C', 'PETUGAS', '2025-12-16 07:25:27', '2026-03-11 07:06:23'),
-('EMP003', 'Dewi Lestari', 'dewi.lestari@lab.ac.id', '$2y$10$N.is7yHaRxKtXbHhjTozXuadpmUr3mGaR.vghidFfvVtMSwIcBheK', 'PETUGAS', '2025-12-16 07:25:27', '2026-03-11 07:06:39');
+('ADM001', 'Dr. Budi Santoso', 'budi.santoso@lab.ac.id', '$2a$10$pFXpUqGYcB46ODYx7gfJCOtN575g0ecoMHjiSBpoUfZYiLKGpZYdG', 'ADMIN', '2025-12-16 07:25:27', '2026-03-23 18:08:56'),
+('ADM002', 'Dr. Sinta Dewi', 'sinta.dewi@lab.ac.id', '$2a$10$lSwFjDREXGU6PtNJQWuqG.O6N6/VOUbPGU04WusXx3ap3D.8/pKvC', 'ADMIN', '2025-12-16 07:25:27', '2026-03-23 18:38:41'),
+('ADM003', 'Dr. Aston', 'aston_lv@lab.ac.id', '$2a$10$4yDRxkss6hPKIuXVeNcKa.EzRSdSVSrTl4TKnNzwrva2F2LlGIezi', 'ADMIN', '2025-12-19 02:33:56', '2026-03-23 18:39:55'),
+('ADM004', 'Prof. Chokun', 'chokun@lab.ac.id', '$2a$10$GffMXWZPfDajrKaOlovZ6ewAon1hQRc7lEXy4hC84BHCFka0AZ7Mu', 'ADMIN', '2025-12-20 17:49:20', '2026-03-23 18:40:34'),
+('EMP001', 'Siti Nurhaliza', 'siti.nurhaliza@lab.ac.id', '$2a$10$DwgeGRnhtffLJAUFmLwAa.85aP79Qg2zK./L5owjm02Z/zCsNdDki', 'PETUGAS', '2025-12-16 07:25:27', '2026-03-23 18:41:44'),
+('EMP002', 'Ahmad Rifai', 'ahmad.rifai@lab.ac.id', '$2a$10$KarR3vPlah1o2DWstNRxAu1h1tfSWp8MeprH/8IikxM6/K.gO9MjS', 'PETUGAS', '2025-12-16 07:25:27', '2026-03-23 18:42:39'),
+('EMP003', 'Dewi Lestari', 'dewi.lestari@lab.ac.id', '$2a$10$2Fg2GukwrCo48ytqKQU.euKEzpfP9NyQts1PwjE2qd3KrmjeXpmpy', 'PETUGAS', '2025-12-16 07:25:27', '2026-03-23 18:43:08');
 
 -- --------------------------------------------------------
 
 --
--- Stand-in struktur untuk tampilan `user_list`
--- (Lihat di bawah untuk tampilan aktual)
+-- Stand-in structure for view `user_list`
+-- (See below for the actual view)
 --
 CREATE TABLE `user_list` (
 `id` varchar(10)
@@ -281,7 +281,7 @@ CREATE TABLE `user_list` (
 -- --------------------------------------------------------
 
 --
--- Struktur untuk view `active_borrowings`
+-- Structure for view `active_borrowings`
 --
 DROP TABLE IF EXISTS `active_borrowings`;
 
@@ -290,7 +290,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
--- Struktur untuk view `equipment_stock_realtime`
+-- Structure for view `equipment_stock_realtime`
 --
 DROP TABLE IF EXISTS `equipment_stock_realtime`;
 
@@ -299,7 +299,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
--- Struktur untuk view `transaction_history`
+-- Structure for view `transaction_history`
 --
 DROP TABLE IF EXISTS `transaction_history`;
 
@@ -308,7 +308,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
--- Struktur untuk view `user_list`
+-- Structure for view `user_list`
 --
 DROP TABLE IF EXISTS `user_list`;
 
@@ -319,14 +319,14 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 
 --
--- Indeks untuk tabel `equipment_category`
+-- Indexes for table `equipment_category`
 --
 ALTER TABLE `equipment_category`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `category_name` (`category_name`);
 
 --
--- Indeks untuk tabel `equipment_condition_log`
+-- Indexes for table `equipment_condition_log`
 --
 ALTER TABLE `equipment_condition_log`
   ADD PRIMARY KEY (`id`),
@@ -335,7 +335,7 @@ ALTER TABLE `equipment_condition_log`
   ADD KEY `idx_log_date` (`check_date`);
 
 --
--- Indeks untuk tabel `inventory_transaction`
+-- Indexes for table `inventory_transaction`
 --
 ALTER TABLE `inventory_transaction`
   ADD PRIMARY KEY (`id`),
@@ -346,7 +346,7 @@ ALTER TABLE `inventory_transaction`
   ADD KEY `idx_transaction_student` (`used_by`);
 
 --
--- Indeks untuk tabel `laboratory_equipment`
+-- Indexes for table `laboratory_equipment`
 --
 ALTER TABLE `laboratory_equipment`
   ADD PRIMARY KEY (`id`),
@@ -355,7 +355,7 @@ ALTER TABLE `laboratory_equipment`
   ADD KEY `idx_equipment_status` (`condition_status`);
 
 --
--- Indeks untuk tabel `student`
+-- Indexes for table `student`
 --
 ALTER TABLE `student`
   ADD PRIMARY KEY (`id`),
@@ -364,7 +364,7 @@ ALTER TABLE `student`
   ADD KEY `idx_nim_student` (`nim`);
 
 --
--- Indeks untuk tabel `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
@@ -373,18 +373,18 @@ ALTER TABLE `users`
   ADD KEY `idx_user_role` (`role`);
 
 --
--- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
+-- Constraints for dumped tables
 --
 
 --
--- Ketidakleluasaan untuk tabel `equipment_condition_log`
+-- Constraints for table `equipment_condition_log`
 --
 ALTER TABLE `equipment_condition_log`
   ADD CONSTRAINT `equipment_condition_log_ibfk_1` FOREIGN KEY (`equipment_id`) REFERENCES `laboratory_equipment` (`id`),
   ADD CONSTRAINT `equipment_condition_log_ibfk_2` FOREIGN KEY (`checked_by`) REFERENCES `users` (`id`);
 
 --
--- Ketidakleluasaan untuk tabel `inventory_transaction`
+-- Constraints for table `inventory_transaction`
 --
 ALTER TABLE `inventory_transaction`
   ADD CONSTRAINT `inventory_transaction_ibfk_1` FOREIGN KEY (`equipment_id`) REFERENCES `laboratory_equipment` (`id`),
@@ -392,7 +392,7 @@ ALTER TABLE `inventory_transaction`
   ADD CONSTRAINT `inventory_transaction_ibfk_3` FOREIGN KEY (`used_by`) REFERENCES `student` (`id`);
 
 --
--- Ketidakleluasaan untuk tabel `laboratory_equipment`
+-- Constraints for table `laboratory_equipment`
 --
 ALTER TABLE `laboratory_equipment`
   ADD CONSTRAINT `laboratory_equipment_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `equipment_category` (`id`);

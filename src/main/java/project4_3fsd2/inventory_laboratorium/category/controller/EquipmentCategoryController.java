@@ -24,28 +24,36 @@ public class EquipmentCategoryController {
 
     @GetMapping
     @Operation(
-        summary = "Mengambil daftar semua kategori", 
-        description = "Mengambil seluruh data kategori alat laboratorium yang tersedia di sistem. Mendukung pagination opsional melalui parameter page dan size."
+        summary = "Mengambil daftar kategori",
+        description = "Mengambil data kategori dengan optional filtering (name) dan pagination"
     )
     public ResponseEntity<ApiResponse<List<EquipmentCategory>>> list(
+            @RequestParam(required = false) String name,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
-        
+
         List<EquipmentCategory> categories;
-        if (page == null && size == null) {
-            categories = service.getAll();
-        } else {
+
+        if (name != null) {
+            categories = service.searchByName(name);
+        } else if (page != null || size != null) {
             int p = (page != null && page >= 0) ? page : 0;
             int s = (size != null && size > 0) ? size : 10;
             categories = service.getAllWithPagination(p, s);
+        } else {
+            categories = service.getAll();
         }
-        
-        return ResponseEntity.ok(ApiResponse.success("Data kategori berhasil diambil", categories));
+
+        String message = categories.isEmpty()
+                ? "Data kategori tidak ditemukan"
+                : "Data kategori berhasil diambil";
+
+        return ResponseEntity.ok(ApiResponse.success(message, categories));
     }
 
     @GetMapping("/{id}")
     @Operation(
-        summary = "Mengambil detail satu kategori", 
+        summary = "Mengambil detail satu kategori",
         description = "Mengambil detail satu kategori berdasarkan ID."
     )
     public ResponseEntity<ApiResponse<EquipmentCategory>> get(@PathVariable String id) {
@@ -53,19 +61,9 @@ public class EquipmentCategoryController {
         return ResponseEntity.ok(ApiResponse.success("Data kategori berhasil ditemukan", category));
     }
 
-    @GetMapping("/search")
-    @Operation(
-        summary = "Mencari kategori berdasarkan nama", 
-        description = "Mencari kategori berdasarkan kata kunci pada nama kategori (case insensitive)."
-    )
-    public ResponseEntity<ApiResponse<List<EquipmentCategory>>> search(@RequestParam String q) {
-        List<EquipmentCategory> categories = service.searchByName(q);
-        return ResponseEntity.ok(ApiResponse.success("Pencarian berhasilc", categories));
-    }
-
     @PostMapping
     @Operation(
-        summary = "Membuat kategori baru", 
+        summary = "Membuat kategori baru",
         description = "Membuat satu data kategori baru ke dalam sistem."
     )
     public ResponseEntity<ApiResponse<EquipmentCategory>> create(@RequestBody EquipmentCategory category) {
@@ -77,7 +75,7 @@ public class EquipmentCategoryController {
 
     @PostMapping("/bulk")
     @Operation(
-        summary = "Membuat kategori secara bulk", 
+        summary = "Membuat kategori secara bulk",
         description = "Membuat banyak kategori baru dalam satu transaksi (maksimal 100)."
     )
     public ResponseEntity<ApiResponse<List<EquipmentCategory>>> createBulk(@RequestBody List<EquipmentCategory> categories) {
@@ -89,11 +87,11 @@ public class EquipmentCategoryController {
 
     @PutMapping("/{id}")
     @Operation(
-        summary = "Memperbarui data kategori", 
+        summary = "Memperbarui data kategori",
         description = "Memperbarui data kategori berdasarkan ID."
     )
     public ResponseEntity<ApiResponse<EquipmentCategory>> update(
-            @PathVariable String id, 
+            @PathVariable String id,
             @RequestBody EquipmentCategory category) {
         EquipmentCategory updated = service.update(id, category);
         return ResponseEntity.ok(ApiResponse.updated(updated));
@@ -101,7 +99,7 @@ public class EquipmentCategoryController {
 
     @DeleteMapping("/{id}")
     @Operation(
-        summary = "Menghapus kategori", 
+        summary = "Menghapus kategori",
         description = "Menghapus satu kategori berdasarkan ID."
     )
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable String id) {
@@ -111,7 +109,7 @@ public class EquipmentCategoryController {
 
     @DeleteMapping("/bulk")
     @Operation(
-        summary = "Menghapus kategori secara bulk", 
+        summary = "Menghapus kategori secara bulk",
         description = "Menghapus banyak kategori berdasarkan daftar ID (maksimal 100)."
     )
     public ResponseEntity<ApiResponse<Void>> deleteBulk(@RequestBody List<String> ids) {

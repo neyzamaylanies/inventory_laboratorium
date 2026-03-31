@@ -3,6 +3,9 @@ package project4_3fsd2.inventory_laboratorium;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.Components;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,11 +13,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenApiConfig {
 
-    /*
-     * ======================================================
-     * GLOBAL METADATA
-     * ======================================================
-     */
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()
@@ -34,14 +32,18 @@ public class OpenApiConfig {
                                 .email("neyzamayylanies@gmail.com")
                                 .url("https://github.com/neyzamaylanies/inventory_laboratorium")
                         )
+                )
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+                .components(new Components()
+                        .addSecuritySchemes("bearerAuth", new SecurityScheme()
+                                .name("bearerAuth")
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")
+                        )
                 );
     }
 
-    /*
-     * ======================================================
-     * GROUP: CATEGORY
-     * ======================================================
-     */
     @Bean
     public GroupedOpenApi categoryApi() {
         return GroupedOpenApi.builder()
@@ -50,11 +52,6 @@ public class OpenApiConfig {
                 .build();
     }
 
-    /*
-     * ======================================================
-     * GROUP: EQUIPMENT
-     * ======================================================
-     */
     @Bean
     public GroupedOpenApi equipmentApi() {
         return GroupedOpenApi.builder()
@@ -63,11 +60,6 @@ public class OpenApiConfig {
                 .build();
     }
 
-    /*
-     * ======================================================
-     * GROUP: CONDITION LOG
-     * ======================================================
-     */
     @Bean
     public GroupedOpenApi conditionLogApi() {
         return GroupedOpenApi.builder()
@@ -76,11 +68,6 @@ public class OpenApiConfig {
                 .build();
     }
 
-    /*
-     * ======================================================
-     * GROUP: TRANSACTION
-     * ======================================================
-     */
     @Bean
     public GroupedOpenApi transactionApi() {
         return GroupedOpenApi.builder()
@@ -89,11 +76,6 @@ public class OpenApiConfig {
                 .build();
     }
 
-    /*
-     * ======================================================
-     * GROUP: USER
-     * ======================================================
-     */
     @Bean
     public GroupedOpenApi userApi() {
         return GroupedOpenApi.builder()
@@ -102,16 +84,19 @@ public class OpenApiConfig {
                 .build();
     }
 
-    /*
-     * ======================================================
-     * GROUP: STUDENT
-     * ======================================================
-     */
     @Bean
     public GroupedOpenApi studentApi() {
         return GroupedOpenApi.builder()
                 .group("Student")
                 .pathsToMatch("/api/students/**")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi authApi() {
+        return GroupedOpenApi.builder()
+                .group("Auth")
+                .pathsToMatch("/api/auth/**")
                 .build();
     }
 }
