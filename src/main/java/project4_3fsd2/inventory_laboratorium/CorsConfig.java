@@ -14,23 +14,18 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         
-        // Allow credentials
-        config.setAllowCredentials(false);
+        // Biar HP Infinix bisa masuk tanpa ditolak satpam Spring
+        config.setAllowCredentials(false); 
         
-        // Allow frontend origins
-        config.addAllowedOrigin("http://localhost");
-        config.addAllowedOrigin("http://localhost:80");
-        config.addAllowedOrigin("http://localhost:8080");
-        config.addAllowedOrigin("http://localhost:5000");
-        config.addAllowedOrigin("http://localhost:5500");
-        config.addAllowedOriginPattern("*"); // semua port Flutter web
-        config.addAllowedOrigin("http://127.0.0.1");
-        config.addAllowedOriginPattern("http://127.0.0.1:*");
+        // Izinkan semua origin agar lebih fleksibel saat debugging
+        config.addAllowedOriginPattern("*"); 
         
-        // Allow all headers
+        // Daftar IP yang diizinkan (Rumah, HP, Kampus)
+        config.addAllowedOrigin("http://192.168.1.5:8080");
+        config.addAllowedOrigin("http://192.168.1.6:8080");
+        config.addAllowedOrigin("http://192.168.10.113:8080");
+        
         config.addAllowedHeader("*");
-        
-        // Allow all HTTP methods (GET, POST, PUT, DELETE, etc)
         config.addAllowedMethod("*");
         config.addExposedHeader("Authorization");
 
